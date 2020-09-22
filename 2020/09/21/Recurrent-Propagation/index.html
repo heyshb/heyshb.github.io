@@ -20,21 +20,21 @@
     <meta name="keywords" content="hexo,hexo-theme,hexo-blog">
     
     <meta name="description" content="">
-    <meta name="description" content="hello, hello, hello">
+    <meta name="description" content="由 Almeida 和 Pineda 分别提出的算法。 Model令 $(x,y)$ 为训练集中的一个数据点， 我们通过 $x$ 和 $y$ 建立一个动态系统。 我们定义能量函数 $E_{\theta}(x,s)$ 和代价函数 $C_{\theta}(y,s)$， 其中 $s$ 为隐藏状态， $\theta$ 为我们希望训练的参数。 当 $x$ 和 $y$ 确定的时候，这两个函数的取值仅取决于 $">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Hello World">
-<meta property="og:url" content="http://yoursite.com/2020/03/12/hello-world/index.html">
+<meta property="og:title" content="Recurrent Propagation">
+<meta property="og:url" content="http://yoursite.com/2020/09/21/Recurrent-Propagation/index.html">
 <meta property="og:site_name" content="Hexo">
-<meta property="og:description" content="hello, hello, hello">
+<meta property="og:description" content="由 Almeida 和 Pineda 分别提出的算法。 Model令 $(x,y)$ 为训练集中的一个数据点， 我们通过 $x$ 和 $y$ 建立一个动态系统。 我们定义能量函数 $E_{\theta}(x,s)$ 和代价函数 $C_{\theta}(y,s)$， 其中 $s$ 为隐藏状态， $\theta$ 为我们希望训练的参数。 当 $x$ 和 $y$ 确定的时候，这两个函数的取值仅取决于 $">
 <meta property="og:locale" content="en_US">
-<meta property="article:published_time" content="2020-03-12T10:06:23.416Z">
-<meta property="article:modified_time" content="2020-03-15T13:18:32.823Z">
+<meta property="article:published_time" content="2020-09-21T02:15:32.000Z">
+<meta property="article:modified_time" content="2020-09-22T07:05:02.589Z">
 <meta property="article:author" content="shb">
 <meta name="twitter:card" content="summary">
     <meta http-equiv="Cache-control" content="no-cache">
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"/>
     
-    <title>Hello World · shb&#39;s blog</title>
+    <title>Recurrent Propagation · shb&#39;s blog</title>
     <style type="text/css">
     @font-face {
         font-family: 'Oswald-Regular';
@@ -231,7 +231,7 @@
                 <a href="/" >shb&#39;s blog</a>
             </div>
             <div class="post-title">
-                <a href="#" class="post-name">Hello World</a>
+                <a href="#" class="post-name">Recurrent Propagation</a>
             </div>
     </div>
     
@@ -261,7 +261,7 @@ height:50vh;
         <h1 class="intro-title">
             <!-- 主页  -->
             
-            Hello World
+            Recurrent Propagation
             <!-- 404 -->
             
         </h1>
@@ -280,12 +280,12 @@ height:50vh;
                 
                 
                     <div class="post-intro-read">
-                        <span>Word count: <span class="post-count word-count">3</span>Reading time: <span class="post-count reading-time">1 min</span></span>
+                        <span>Word count: <span class="post-count word-count">696</span>Reading time: <span class="post-count reading-time">3 min</span></span>
                     </div>
                 
                 <div class="post-intro-meta">
                     <span class="post-intro-calander iconfont-archer">&#xe676;</span>
-                    <span class="post-intro-time">2020/03/12</span>
+                    <span class="post-intro-time">2020/09/21</span>
                     
                     <span id="busuanzi_container_page_pv" class="busuanzi-pv">
                         <span class="iconfont-archer">&#xe602;</span>
@@ -409,7 +409,35 @@ height:50vh;
         <div class="container container-unloaded">
             <main class="main post-page">
     <article class="article-entry">
-        <h1 id="hello-hello-hello"><a href="#hello-hello-hello" class="headerlink" title="hello, hello, hello"></a>hello, hello, hello</h1>
+        <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css"><p>由 Almeida 和 Pineda 分别提出的算法。</p>
+<h2 id="Model"><a href="#Model" class="headerlink" title="Model"></a>Model</h2><p>令 $(x,y)$ 为训练集中的一个数据点， 我们通过 $x$ 和 $y$ 建立一个动态系统。 我们定义能量函数 $E_{\theta}(x,s)$ 和代价函数 $C_{\theta}(y,s)$， 其中 $s$ 为隐藏状态， $\theta$ 为我们希望训练的参数。 当 $x$ 和 $y$ 确定的时候，这两个函数的取值仅取决于 $s$ 和 $\theta$。 简略起见， 我们把这两个函数里的 $x$ 和 $y$ 忽略，写作 $E_{\theta}(s)$ 和代价函数 $C_{\theta}(s)$。 这个动态系统的运行过程如下：</p>
+<p>类似于梯度下降， $s$ 从初始状态开始， 沿着 $E_{\theta}(s)$ 在 $s$ 处的梯度反方向下降，即：</p>
+<script type="math/tex; mode=display">
+\frac{\mathrm{d}s}{\mathrm{d}t} = \frac{\partial E_{\theta}}{\partial s} (s)
+\tag{1}</script><p>这个过程称为松弛阶段(free phase)。 $s$ 最终会在 $E_\theta$ 的作用下达到一个极小值点， 我们将其记作 $s_{\theta}^{0}$， 称为松弛不动点。 注意到 $s$ 可能由于初值不同而收敛到不同的极值点，但简单起见，我们先不考虑这件事。</p>
+<p>我们的目标是在给定 $x,y$ 的情况下，最小化松弛不动点处代价函数的值 $J(\theta) := C_{\theta}(s_{\theta}^{0})$。 如果我们能够求出 $J$ 关于 $\theta$ 的梯度， 那我们就可以用梯度下降的方式来优化 $\theta$。</p>
+<h2 id="Method"><a href="#Method" class="headerlink" title="Method"></a>Method</h2><p>定义 $S_{\theta}^{0}(s,t)$ 为隐状态 $s$ 根据方程 $(1)$ 转移到时间 $t$ 时得到的中间状态。这个状态在动态系统理论中被称为流(flow)。 </p>
+<p>我们根据$S_{\theta}^{0}$的定义，来定义代价函数 $C_{\theta}$ 的中间状态 $L_{\theta}$：</p>
+<script type="math/tex; mode=display">
+L_{\theta}(s,t) := C_{\theta}(S_{\theta}^{0}(s,t))
+\tag{2}</script><p>根据定义，我们显然有 $L_{\theta}(s,0)=C_{\theta}(s)$， 以及在 $t \rightarrow +\infty$ 时， $L_\theta(s,t) \rightarrow J(\theta)$。 在 $E_{\theta}$ 和 $C_{\theta}$ 满足弱正则条件时，我们在 $t \rightarrow +\infty$ 时，有：</p>
+<script type="math/tex; mode=display">
+\frac{\partial L_{\theta}}{\partial \theta}(s,t) \rightarrow \frac{\partial J}{\partial \theta}(\theta)
+\tag{3}</script><p>定义：</p>
+<script type="math/tex; mode=display">
+\bar{S}_{t} := \frac{\partial L_{\theta}}{\partial s}(s_{\theta}^0, t)
+\tag{4}</script><script type="math/tex; mode=display">
+\bar{\Theta}_{t} := \frac{\partial L_{\theta}}{\partial \theta}(s_{\theta}^0, t)
+\tag{5}</script><p>注意两者的定义都建立在一个以松弛不动点为初状态的动态系统的基础上。两者分别是 $t$ 时刻代价函数在状态空间 $s$ 和参数空间 $\theta$ 上的梯度。很显然，$\bar{\Theta}_{+ \infty}$ 就是我们要求的 $\frac{\partial J}{\partial \theta}$。</p>
+<h3 id="Theorem-1"><a href="#Theorem-1" class="headerlink" title="Theorem 1"></a>Theorem 1</h3><script type="math/tex; mode=display">
+\bar{S}_0 = \frac{\partial C_\theta}{\partial s}(s_\theta^0) 
+\tag{6}</script><script type="math/tex; mode=display">
+\bar{\Theta}_0 = \frac{\partial C_\theta}{\partial \theta}(s_\theta^0)
+\tag{7}</script><script type="math/tex; mode=display">
+\frac{\mathrm{d}\bar{S}_t}{\mathrm{d} t} = - \frac{\partial^{2} E_{\theta}}{\partial s^2} * \bar{S}_t
+\tag{8}</script><script type="math/tex; mode=display">
+\frac{\mathrm{d}\bar{\Theta}_t}{\mathrm{d} t} = - \frac{\partial^{2} E_{\theta}}{\partial \theta \partial s} * \bar{S}_t
+\tag{9}</script>
     </article>
     <!-- license  -->
     
@@ -417,13 +445,13 @@ height:50vh;
     <ul class="post-paginator">
         <li class="next">
             
-                <div class="nextSlogan">Next Post</div>
-                <a href= "/2020/04/04/Algebra/" title= "Linear Algebra">
-                    <div class="nextTitle">Linear Algebra</div>
-                </a>
-            
         </li>
         <li class="previous">
+            
+                <div class="prevSlogan">Previous Post</div>
+                <a href= "/2020/04/04/Algebra/" title= "Linear Algebra">
+                    <div class="prevTitle">Linear Algebra</div>
+                </a>
             
         </li>
     </ul>
@@ -552,7 +580,7 @@ top:50vh;
         <div class="toc-catalog">
             <span class="iconfont-archer catalog-icon">&#xe613;</span><span>CATALOG</span>
         </div>
-        <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#hello-hello-hello"><span class="toc-number">1.</span> <span class="toc-text">hello, hello, hello</span></a></li></ol>
+        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#Model"><span class="toc-number">1.</span> <span class="toc-text">Model</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Method"><span class="toc-number">2.</span> <span class="toc-text">Method</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Theorem-1"><span class="toc-number">2.1.</span> <span class="toc-text">Theorem 1</span></a></li></ol></li></ol>
     </div>
     
     <div class="back-top iconfont-archer">&#xe639;</div>
