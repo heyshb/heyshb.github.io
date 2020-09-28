@@ -1,96 +1,46 @@
 <?xml version="1.0" encoding="utf-8"?>
-<search>
-  <entry>
-    <title>Almeida–Pineda Recurrent Backpropagation</title>
-    <url>/2020/09/21/Recurrent-Propagation/</url>
-    <content><![CDATA[<link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css"><p>由 Almeida 和 Pineda 分别提出的算法。</p>
-<h2 id="Model"><a href="#Model" class="headerlink" title="Model"></a>Model</h2><p>令 $(x,y)$ 为训练集中的一个数据点， 我们通过 $x$ 和 $y$ 建立一个动态系统。 我们定义能量函数 $E_{\theta}(x,s)$ 和代价函数 $C_{\theta}(y,s)$， 其中 $s$ 为隐藏状态， $\theta$ 为我们希望训练的参数。 当 $x$ 和 $y$ 确定的时候，这两个函数的取值仅取决于 $s$ 和 $\theta$。 简略起见， 我们把这两个函数里的 $x$ 和 $y$ 忽略，写作 $E_{\theta}(s)$ 和 $C_{\theta}(s)$。 这个动态系统的运行过程如下：</p>
-<p>类似于梯度下降， $s$ 从初始状态开始， 沿着 $E_{\theta}(s)$ 在 $s$ 处的梯度反方向下降，即：</p>
-<script type="math/tex; mode=display">
-\frac{\mathrm{d}s}{\mathrm{d}t} = -\frac{\partial E_{\theta}}{\partial s} (s)
-\tag{1}</script><p>这个过程称为松弛阶段(free phase)。 $s$ 最终会在 $E_\theta$ 的作用下达到一个极小值点， 我们将其记作 $s_{\theta}^{0}$， 称为松弛不动点。 注意到 $s$ 可能由于初值不同而收敛到不同的极值点，但简单起见，我们先不考虑这件事。</p>
-<p>我们的目标是在给定 $x,y$ 的情况下，最小化松弛不动点处代价函数的值 $J(\theta) := C_{\theta}(s_{\theta}^{0})$。 如果我们能够求出 $J$ 关于 $\theta$ 的梯度， 那我们就可以用梯度下降的方式来优化 $\theta$。</p>
-<h2 id="Method"><a href="#Method" class="headerlink" title="Method"></a>Method</h2><p>定义 $S_{\theta}^{0}(s,t)$ 为隐状态 $s$ 根据方程 $(1)$ 转移到时间 $t$ 时得到的中间状态。这个状态在动态系统理论中被称为流(flow)。 </p>
-<p>我们根据$S_{\theta}^{0}$的定义，来定义代价函数 $C_{\theta}$ 的中间状态 $L_{\theta}$：</p>
-<script type="math/tex; mode=display">
-L_{\theta}(s,t) := C_{\theta}(S_{\theta}^{0}(s,t))
-\tag{2}</script><p>根据定义，我们显然有 $L_{\theta}(s,0)=C_{\theta}(s)$， 以及在 $t \rightarrow +\infty$ 时， $L_\theta(s,t) \rightarrow J(\theta)$。 在 $E_{\theta}$ 和 $C_{\theta}$ 满足弱正则条件时，我们在 $t \rightarrow +\infty$ 时，有：</p>
-<script type="math/tex; mode=display">
-\frac{\partial L_{\theta}}{\partial \theta}(s,t) \rightarrow \frac{\partial J}{\partial \theta}(\theta)
-\tag{3}</script><p>定义：</p>
-<script type="math/tex; mode=display">
-\bar{S}_{t} := \frac{\partial L_{\theta}}{\partial s}(s_{\theta}^0, t)
-\tag{4}</script><script type="math/tex; mode=display">
-\bar{\Theta}_{t} := \frac{\partial L_{\theta}}{\partial \theta}(s_{\theta}^0, t)
-\tag{5}</script><p>注意两者的定义都建立在一个以松弛不动点为初状态的动态系统的基础上。两者分别是 $t$ 时刻代价函数在状态空间 $s$ 和参数空间 $\theta$ 上的梯度。很显然，$\bar{\Theta}_{+ \infty}$ 就是我们要求的 $\frac{\partial J}{\partial \theta}$。</p>
-<h3 id="Theorem-1"><a href="#Theorem-1" class="headerlink" title="Theorem 1"></a>Theorem 1</h3><script type="math/tex; mode=display">
-\bar{S}_0 = \frac{\partial C_\theta}{\partial s}(s_\theta^0) 
-\tag{6}</script><script type="math/tex; mode=display">
-\bar{\Theta}_0 = \frac{\partial C_\theta}{\partial \theta}(s_\theta^0)
-\tag{7}</script><script type="math/tex; mode=display">
-\frac{\mathrm{d}\bar{S}_t}{\mathrm{d} t} = - \frac{\partial^{2} E_{\theta}}{\partial s^2}(s_\theta^0) \cdot \bar{S}_t
-\tag{8}</script><script type="math/tex; mode=display">
-\frac{\mathrm{d}\bar{\Theta}_t}{\mathrm{d} t} = - \frac{\partial^{2} E_{\theta}}{\partial \theta \partial s}(s_\theta^0) \cdot \bar{S}_t
-\tag{9}</script><h3 id="Proof-of-Theorem-1"><a href="#Proof-of-Theorem-1" class="headerlink" title="Proof of Theorem 1"></a>Proof of Theorem 1</h3><p>$(6),(7)$ 都是显然的。</p>
-<p>首先，我们证明，对于任意的$(s,t)$：</p>
-<script type="math/tex; mode=display">
-\frac{\partial{L}}{\partial{t}}(s,t) + \frac{\partial{L}}{\partial{s}}(s,t) \cdot \frac{\partial{E}}{\partial{s}}(s) = 0
-\tag{10}</script><p>一个<font color=red>错误</font>的证明：由方程$(1)$，我们可以得到，对于任意的$(s,t)$：</p>
-<script type="math/tex; mode=display">
-\frac{\partial{L}}{\partial{t}}(s,t) = \frac{\partial{L}}{\partial{s}}(s,t) \cdot \frac{\mathrm{d}s}{\mathrm{d}t}(s) = \frac{\partial{L}}{\partial{s}}(s,t) \cdot (-\frac{\partial{E}}{\partial{s}}(s))
-\tag{11}</script><p>事实上这里的第一个等号并不能直接由求导法则成立，而需要像后文中提取出单变量函数才能转化。</p>
-<p>论文中的证明：根据定义，我们有：</p>
-<script type="math/tex; mode=display">
-L(S^0(s,u),t)=L(s,t+u)
-\tag{12}</script><p>显然，右侧对 $u$ 和 $t$ 求导得到同样的结果，因此左边也应该得到同样的结果：</p>
-<script type="math/tex; mode=display">
-\begin{aligned}
-\frac{\partial{L}}{\partial{t}}(S^0(s,u),t) &= \frac{\mathrm{d}L}{\mathrm{d}u}(S^0(s,u),t) \\
-&= \frac{\partial{L}}{\partial{s}}(S^0(s,u),t) \cdot \frac{\mathrm{d}s}{\mathrm{d}u}(S^0(s,u)) \\
-&= -\frac{\partial{L}}{\partial{s}}(S^0(s,u),t) \cdot \frac{\partial{E}}{\partial{s}}(S^0(s,u))
-\end{aligned}</script><p>将 $u=0$ 代入，就能得到 $(10)$ 的结果。</p>
-]]></content>
-  </entry>
-  <entry>
-    <title>Linear Algebra</title>
-    <url>/2020/04/04/Algebra/</url>
-    <content><![CDATA[<h1 id="Caylay-Hamilton-theorem"><a href="#Caylay-Hamilton-theorem" class="headerlink" title="Caylay-Hamilton theorem"></a>Caylay-Hamilton theorem</h1><p>对于一个 $n \times n$ 的矩阵 $A$，定义其特征多项式 </p>
-<script type="math/tex; mode=display">
-p_A(\lambda)=\det(\lambda I_n - A)</script><p>$p_A(\lambda)$ 可以写成 $\displaystyle\sum_{i=0}^{n}{c_i\lambda^i}$ 的形式，注意这里的 $\lambda$ 不一定是标量，可以是方阵。当 $\lambda$ 是方阵时，$\lambda^0=I_n$。</p>
-<p><strong>Caylay-Hamilton theorem</strong> 给出结果：</p>
-<script type="math/tex; mode=display">
-p_A(A) = 0</script><h2 id="proof"><a href="#proof" class="headerlink" title="proof"></a>proof</h2><p>令 $g_A(\lambda) = \lambda I_n-A$, 则 $p_A=\det(g_A)$。设 $B(\lambda) = adj(g_A)$。</p>
-<p>由于 $Xadj(X) = \det(X)I_n$，我们有：</p>
-<script type="math/tex; mode=display">
-B(\lambda)g_A(\lambda) = \det(g_A(\lambda))I_n = p_A(\lambda)I_n \tag{1}</script><p>显然，矩阵 $B(\lambda)$ 中每一项里 $\lambda$ 的次数不超过 $n-1$。将 $B(\lambda)$ 按 $\lambda$ 的次数分拆，可以得到</p>
-<script type="math/tex; mode=display">
-B(\lambda) = \sum_{i=0}^{n-1}B_i\lambda^i</script><p>其中 $B_i$ 是 $n$ 阶方阵。</p>
-<p>将其代入得：</p>
-<script type="math/tex; mode=display">
-\begin{aligned}
-B(\lambda)g_A(\lambda) &= B(\lambda)(\lambda I_n - A) \\
-&= B_{n-1}\lambda^n + \sum_{i=1}^{n-1}{(B_{i-1}-B_iA)\lambda^i}-B_0A 
-\end{aligned}
-\tag{2}</script><p>由于 $\displaystyle p_A(\lambda) = \sum_{i=0}^{n}{c_i*\lambda^i}$， 我们有：</p>
-<script type="math/tex; mode=display">
-p_A(\lambda)I_n = \sum_{i=0}^{n}{c_i \lambda^i I_n}
-\tag{3}</script><p>对比 $(2), (3)$ 中的系数，可以得到：</p>
-<script type="math/tex; mode=display">
-\left\{
-    \begin{aligned}
-    B_{n-1} &= c_n \lambda^n I_n \\
-    B_{n-2} - B_{n-1}A &= c_{n-1} \lambda^{n-1} I_n \\
-    \dotsc \\
-    B_{0} - B_{1}A &= c_{1} \lambda I_n \\
-    -B_{0}A &= c_{0} I_n
-    \end{aligned}
-\right.
-\tag{4}</script><p>将 $(4)$ 中等式从下往上依次乘以 $A_0, A_1, \dotsc, A_n$, 相加即可得到 $p_A(a) = 0$。</p>
-]]></content>
-  </entry>
-  <entry>
-    <title>Hello World</title>
-    <url>/2020/03/12/hello-world/</url>
-    <content><![CDATA[<h1 id="hello-hello-hello"><a href="#hello-hello-hello" class="headerlink" title="hello, hello, hello"></a>hello, hello, hello</h1>]]></content>
-  </entry>
+<search> 
+  
+  
+    
+    <entry>
+      <title>Almeida–Pineda Recurrent Backpropagation</title>
+      <link href="/2020/09/21/Recurrent-Propagation/"/>
+      <url>/2020/09/21/Recurrent-Propagation/</url>
+      
+        <content type="html"><![CDATA[<link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css"><p>由 Almeida 和 Pineda 分别提出的算法。</p><h2 id="Model"><a href="#Model" class="headerlink" title="Model"></a>Model</h2><p>令 $(x,y)$ 为训练集中的一个数据点， 我们通过 $x$ 和 $y$ 建立一个动态系统。 我们定义能量函数 $E_{\theta}(x,s)$ 和代价函数 $C_{\theta}(y,s)$， 其中 $s$ 为隐藏状态， $\theta$ 为我们希望训练的参数。 当 $x$ 和 $y$ 确定的时候，这两个函数的取值仅取决于 $s$ 和 $\theta$。 简略起见， 我们把这两个函数里的 $x$ 和 $y$ 忽略，写作 $E_{\theta}(s)$ 和 $C_{\theta}(s)$。 这个动态系统的运行过程如下：</p><p>类似于梯度下降， $s$ 从初始状态开始， 沿着 $E_{\theta}(s)$ 在 $s$ 处的梯度反方向下降，即：</p><script type="math/tex; mode=display">\frac{\mathrm{d}{s}}{\mathrm{d}{t}} = -\frac{\partial E_{\theta}}{\partial s} (s)\tag{1}</script><p>这个过程称为松弛阶段(free phase)。 $s$ 最终会在 $E_\theta$ 的作用下达到一个极小值点， 我们将其记作 $s_{\theta}^{0}$， 称为松弛不动点。 注意到 $s$ 可能由于初值不同而收敛到不同的极值点，但简单起见，我们先不考虑这件事。</p><p>我们的目标是在给定 $x,y$ 的情况下，最小化松弛不动点处代价函数的值 $J(\theta) := C_{\theta}(s_{\theta}^{0})$。 如果我们能够求出 $J$ 关于 $\theta$ 的梯度， 那我们就可以用梯度下降的方式来优化 $\theta$。</p><h2 id="Method"><a href="#Method" class="headerlink" title="Method"></a>Method</h2><p>定义 $S_{\theta}^{0}(s,t)$ 为隐状态 $s$ 根据方程 $(1)$ 转移到时间 $t$ 时得到的中间状态。这个状态在动态系统理论中被称为流(flow)。 </p><p>我们根据$S_{\theta}^{0}$的定义，来定义代价函数 $C_{\theta}$ 的中间状态 $L_{\theta}$：</p><script type="math/tex; mode=display">L_{\theta}(s,t) := C_{\theta}(S_{\theta}^{0}(s,t))\tag{2}</script><p>根据定义，我们显然有 $L_{\theta}(s,0)=C_{\theta}(s)$， 以及在 $t \rightarrow +\infty$ 时， $L_\theta(s,t) \rightarrow J(\theta)$。 在 $E_{\theta}$ 和 $C_{\theta}$ 满足弱正则条件时，我们在 $t \rightarrow +\infty$ 时，有：</p><script type="math/tex; mode=display">\frac{\partial L_{\theta}}{\partial \theta}(s,t) \rightarrow \frac{\partial J}{\partial \theta}(\theta)\tag{3}</script><p>定义：</p><script type="math/tex; mode=display">\bar{S}_{t} := \frac{\partial L_{\theta}}{\partial s}(s_{\theta}^0, t)\tag{4}</script><script type="math/tex; mode=display">\bar{\Theta}_{t} := \frac{\partial L_{\theta}}{\partial \theta}(s_{\theta}^0, t)\tag{5}</script><p>注意两者的定义都建立在一个以松弛不动点为初状态的动态系统的基础上。两者分别是 $t$ 时刻代价函数在状态空间 $s$ 和参数空间 $\theta$ 上的梯度。很显然，$\bar{\Theta}_{+ \infty}$ 就是我们要求的 $\frac{\partial J}{\partial \theta}$。</p><h3 id="Theorem-1"><a href="#Theorem-1" class="headerlink" title="Theorem 1"></a>Theorem 1</h3><script type="math/tex; mode=display">\bar{S}_0 = \frac{\partial C_\theta}{\partial s}(s_\theta^0) \tag{6}</script><script type="math/tex; mode=display">\bar{\Theta}_0 = \frac{\partial C_\theta}{\partial \theta}(s_\theta^0)\tag{7}</script><script type="math/tex; mode=display">\frac{\mathrm{d}\bar{S}_t}{\mathrm{d} {t}} = - \frac{\partial^{2} E_{\theta}}{\partial s^2}(s_\theta^0) \cdot \bar{S}_t\tag{8}</script><script type="math/tex; mode=display">\frac{\mathrm{d}\bar{\Theta}_t}{\mathrm{d} {t}} = - \frac{\partial^{2} E_{\theta}}{\partial \theta \partial s}(s_\theta^0) \cdot \bar{S}_t\tag{9}</script><h3 id="Proof-of-Theorem-1"><a href="#Proof-of-Theorem-1" class="headerlink" title="Proof of Theorem 1"></a>Proof of Theorem 1</h3><p>为了书写方便，下面省略一部分的 $\theta$。$(6),(7)$ 都是显然的。</p><p>首先，我们证明，对于任意的$(s,t)$：</p><script type="math/tex; mode=display">\frac{\partial{L}}{\partial{t}}(s,t) + \frac{\partial{L}}{\partial{s}}(s,t) \cdot \frac{\partial{E}}{\partial{s}}(s) = 0\tag{10}</script><p>一个<font color=red>错误</font>的证明：由方程$(1)$，我们可以得到，对于任意的$(s,t)$：</p><script type="math/tex; mode=display">\frac{\partial{L}}{\partial{t}}(s,t) = \frac{\partial{L}}{\partial{s}}(s,t) \cdot \frac{\mathrm{d}s}{\mathrm{d}t}(s) = \frac{\partial{L}}{\partial{s}}(s,t) \cdot (-\frac{\partial{E}}{\partial{s}}(s))\tag{11}</script><p>事实上这里的第一个等号并不能直接由求导法则成立，而需要像后文中提取出单变量函数才能转化。</p><p>论文中的证明：根据定义，我们有：</p><script type="math/tex; mode=display">L(S^0(s,u),t)=L(s,t+u)\tag{12}</script><p>显然，右侧对 $u$ 和 $t$ 求导得到同样的结果，因此左边也应该得到同样的结果：</p><script type="math/tex; mode=display">\begin{aligned}\frac{\partial{L}}{\partial{t}}(S^0(s,u),t) &= \frac{\mathrm{d}L}{\mathrm{d}u}(S^0(s,u),t) \\&= \frac{\partial{L}}{\partial{s}}(S^0(s,u),t) \cdot \frac{\mathrm{d}s}{\mathrm{d}u}(S^0(s,u)) \\&= -\frac{\partial{L}}{\partial{s}}(S^0(s,u),t) \cdot \frac{\partial{E}}{\partial{s}}(S^0(s,u))\end{aligned} \tag{13}</script><p>将 $u=0$ 代入 $(13)$，就能得到 $(10)$ 的结果。</p><p>将 $(10)$ 两边对 $s$ 求导，可以得到：</p><script type="math/tex; mode=display">\frac{\partial^2{L}}{\partial{t}\partial{s}}(s,t) + \frac{\partial^2(L)}{\partial{s^2}}(s,t) \cdot \frac{\partial{E}}{\partial{s}}(s) + \frac{\partial{L}}{\partial{s}}(s,t) \cdot \frac{\partial^2{E}}{\partial{s^2}}(s)= 0\tag{14}</script><p>把 $s = s_\theta^0$ 代入上式，由于不动点处有 $\frac{\partial{E}}{\partial s} (s_\theta^0) = 0$，因此可以得到：</p><script type="math/tex; mode=display">\frac{\mathrm{d}}{\mathrm{d}{t}}\frac{\partial{L}}{\partial{s}}(s_\theta^0,t) = -\frac{\partial^2{E}}{\partial{s^2}}(s_\theta^0) \cdot \frac{\partial{L}}{\partial{s}}(s_\theta^0,t) \tag{15}</script><p>将 $\bar{S}_{t} = \frac{\partial L_{\theta}}{\partial s}(s_{\theta}^0, t)$ 代入，就可以得到方程 $(8)$。可以看到 $(6),(8)$ 刻画了一个关于 $\bar{S}_t$ 的动态系统， 由于 $-\frac{\partial^2{E}}{\partial{s^2}}(s_\theta^0)$ 是定值，我们可以通过数值方法得到任意时刻 $\bar{S}_t$ 的值。</p><p>这里一开始理解的时候出了一点问题。由于 $s_\theta^0$ 是松弛不动点，所以 $L(s_\theta^0,t)$ 在 $t$ 改变时是一个定值，所以我误认为左边恒等于 $0$。 但 $s_\theta^0$ 的邻域并不是不动点，因此两个 $s$ 关于 $t$ 的导数是不同的。</p><p>类似之前的操作，我们将 $(10)$ 两边对 $\theta$ 求导，可以得到：</p><script type="math/tex; mode=display">\frac{\partial^2{L}}{\partial{t}\partial{\theta}}(s,t) + \frac{\partial^2{L}}{\partial{s}\partial{\theta}}(s,t) \cdot \frac{\partial{E}}{\partial{s}}(s) + \frac{\partial{L}}{\partial{s}}(s,t) \cdot \frac{\partial^2{E}}{\partial{s}\partial{\theta}}(s) = 0</script><p>同样将 $s = s_\theta^0$ 代入，消去带有 $\frac{\partial{E}}{\partial s} (s)$ 的项，就可以得到：</p><script type="math/tex; mode=display">\frac{\mathrm{d}}{\mathrm{d}{t}}\frac{\partial{L}}{\partial{\theta}}(s_\theta^0,t) = - \frac{\partial{L}}{\partial{s}}(s_\theta^0,t) \cdot \frac{\partial^2{E}}{\partial{s}\partial{\theta}}(s_\theta^0) \tag{16}</script><p>即方程 $(9)$。</p><p>回过头看整个证明，重点在于方程 $10$ 把时域的导数和状态域的导数联系在了一起。在项 $<br>\frac{\partial{L}}{\partial{t}}(s,t)$ 对某个参数求导时，可以得到对应参数的导数在时域上的导数。 而<br>$\frac{\partial{L}}{\partial{s}}(s,t) \cdot \frac{\partial{E}}{\partial{s}}(s)$ 在松弛不动点处求导时，只会留下 $\bar{S}_t$ 和某个与 $t$ 无关的二阶导数乘积，进而可以直接计算。</p><h3 id="Algorithm"><a href="#Algorithm" class="headerlink" title="Algorithm"></a>Algorithm</h3><ol><li>从任意初始状态 $s$ 出发，用方程 $(1)$ 迭代得到松弛不动点 $s_\theta^0$。</li><li>根据 $(6)(7)(8)(9)$，得到 $\bar{\Theta}_{+ \infty}$，即所求梯度。</li></ol><h2 id="Q-amp-A"><a href="#Q-amp-A" class="headerlink" title="Q&amp;A"></a>Q&amp;A</h2><p>Q: 为什么 $\bar{S}_t$ 一定可以收敛，也就是 $(8)$ 的左侧为什么一定可以迭代到 $0$？</p><p>A: 由于 $s_\theta^0$ 是 $E_\theta$ 的极小值点，所以此处的 Hessian 矩阵 $\frac{\partial^2{E_\theta}}{\partial{s^2}}(s_\theta^0)$ 是正定的。</p>]]></content>
+      
+      
+      
+    </entry>
+    
+    
+    
+    <entry>
+      <title>Linear Algebra</title>
+      <link href="/2020/04/04/Algebra/"/>
+      <url>/2020/04/04/Algebra/</url>
+      
+        <content type="html"><![CDATA[<h1 id="Caylay-Hamilton-theorem"><a href="#Caylay-Hamilton-theorem" class="headerlink" title="Caylay-Hamilton theorem"></a>Caylay-Hamilton theorem</h1><p>对于一个 $n \times n$ 的矩阵 $A$，定义其特征多项式 </p><script type="math/tex; mode=display">p_A(\lambda)=\det(\lambda I_n - A)</script><p>$p_A(\lambda)$ 可以写成 $\displaystyle\sum_{i=0}^{n}{c_i\lambda^i}$ 的形式，注意这里的 $\lambda$ 不一定是标量，可以是方阵。当 $\lambda$ 是方阵时，$\lambda^0=I_n$。</p><p><strong>Caylay-Hamilton theorem</strong> 给出结果：</p><script type="math/tex; mode=display">p_A(A) = 0</script><h2 id="proof"><a href="#proof" class="headerlink" title="proof"></a>proof</h2><p>令 $g_A(\lambda) = \lambda I_n-A$, 则 $p_A=\det(g_A)$。设 $B(\lambda) = adj(g_A)$。</p><p>由于 $Xadj(X) = \det(X)I_n$，我们有：</p><script type="math/tex; mode=display">B(\lambda)g_A(\lambda) = \det(g_A(\lambda))I_n = p_A(\lambda)I_n \tag{1}</script><p>显然，矩阵 $B(\lambda)$ 中每一项里 $\lambda$ 的次数不超过 $n-1$。将 $B(\lambda)$ 按 $\lambda$ 的次数分拆，可以得到</p><script type="math/tex; mode=display">B(\lambda) = \sum_{i=0}^{n-1}B_i\lambda^i</script><p>其中 $B_i$ 是 $n$ 阶方阵。</p><p>将其代入得：</p><script type="math/tex; mode=display">\begin{aligned}B(\lambda)g_A(\lambda) &= B(\lambda)(\lambda I_n - A) \\&= B_{n-1}\lambda^n + \sum_{i=1}^{n-1}{(B_{i-1}-B_iA)\lambda^i}-B_0A \end{aligned}\tag{2}</script><p>由于 $\displaystyle p_A(\lambda) = \sum_{i=0}^{n}{c_i*\lambda^i}$， 我们有：</p><script type="math/tex; mode=display">p_A(\lambda)I_n = \sum_{i=0}^{n}{c_i \lambda^i I_n}\tag{3}</script><p>对比 $(2), (3)$ 中的系数，可以得到：</p><script type="math/tex; mode=display">\left\{    \begin{aligned}    B_{n-1} &= c_n \lambda^n I_n \\    B_{n-2} - B_{n-1}A &= c_{n-1} \lambda^{n-1} I_n \\    \dotsc \\    B_{0} - B_{1}A &= c_{1} \lambda I_n \\    -B_{0}A &= c_{0} I_n    \end{aligned}\right.\tag{4}</script><p>将 $(4)$ 中等式从下往上依次乘以 $A_0, A_1, \dotsc, A_n$, 相加即可得到 $p_A(a) = 0$。</p>]]></content>
+      
+      
+      
+    </entry>
+    
+    
+    
+    <entry>
+      <title>Hello World</title>
+      <link href="/2020/03/12/hello-world/"/>
+      <url>/2020/03/12/hello-world/</url>
+      
+        <content type="html"><![CDATA[<h1 id="hello-hello-hello"><a href="#hello-hello-hello" class="headerlink" title="hello, hello, hello"></a>hello, hello, hello</h1>]]></content>
+      
+      
+      
+    </entry>
+    
+    
+  
+  
 </search>

@@ -28,7 +28,7 @@
 <meta property="og:description" content="由 Almeida 和 Pineda 分别提出的算法。 Model令 $(x,y)$ 为训练集中的一个数据点， 我们通过 $x$ 和 $y$ 建立一个动态系统。 我们定义能量函数 $E_{\theta}(x,s)$ 和代价函数 $C_{\theta}(y,s)$， 其中 $s$ 为隐藏状态， $\theta$ 为我们希望训练的参数。 当 $x$ 和 $y$ 确定的时候，这两个函数的取值仅取决于 $">
 <meta property="og:locale" content="en_US">
 <meta property="article:published_time" content="2020-09-21T02:15:32.000Z">
-<meta property="article:modified_time" content="2020-09-25T08:41:56.970Z">
+<meta property="article:modified_time" content="2020-09-28T10:47:07.555Z">
 <meta property="article:author" content="shb">
 <meta name="twitter:card" content="summary">
     <meta http-equiv="Cache-control" content="no-cache">
@@ -280,7 +280,7 @@ height:50vh;
                 
                 
                     <div class="post-intro-read">
-                        <span>Word count: <span class="post-count word-count">990</span>Reading time: <span class="post-count reading-time">4 min</span></span>
+                        <span>Word count: <span class="post-count word-count">1.7k</span>Reading time: <span class="post-count reading-time">7 min</span></span>
                     </div>
                 
                 <div class="post-intro-meta">
@@ -413,7 +413,7 @@ height:50vh;
 <h2 id="Model"><a href="#Model" class="headerlink" title="Model"></a>Model</h2><p>令 $(x,y)$ 为训练集中的一个数据点， 我们通过 $x$ 和 $y$ 建立一个动态系统。 我们定义能量函数 $E_{\theta}(x,s)$ 和代价函数 $C_{\theta}(y,s)$， 其中 $s$ 为隐藏状态， $\theta$ 为我们希望训练的参数。 当 $x$ 和 $y$ 确定的时候，这两个函数的取值仅取决于 $s$ 和 $\theta$。 简略起见， 我们把这两个函数里的 $x$ 和 $y$ 忽略，写作 $E_{\theta}(s)$ 和 $C_{\theta}(s)$。 这个动态系统的运行过程如下：</p>
 <p>类似于梯度下降， $s$ 从初始状态开始， 沿着 $E_{\theta}(s)$ 在 $s$ 处的梯度反方向下降，即：</p>
 <script type="math/tex; mode=display">
-\frac{\mathrm{d}s}{\mathrm{d}t} = -\frac{\partial E_{\theta}}{\partial s} (s)
+\frac{\mathrm{d}{s}}{\mathrm{d}{t}} = -\frac{\partial E_{\theta}}{\partial s} (s)
 \tag{1}</script><p>这个过程称为松弛阶段(free phase)。 $s$ 最终会在 $E_\theta$ 的作用下达到一个极小值点， 我们将其记作 $s_{\theta}^{0}$， 称为松弛不动点。 注意到 $s$ 可能由于初值不同而收敛到不同的极值点，但简单起见，我们先不考虑这件事。</p>
 <p>我们的目标是在给定 $x,y$ 的情况下，最小化松弛不动点处代价函数的值 $J(\theta) := C_{\theta}(s_{\theta}^{0})$。 如果我们能够求出 $J$ 关于 $\theta$ 的梯度， 那我们就可以用梯度下降的方式来优化 $\theta$。</p>
 <h2 id="Method"><a href="#Method" class="headerlink" title="Method"></a>Method</h2><p>定义 $S_{\theta}^{0}(s,t)$ 为隐状态 $s$ 根据方程 $(1)$ 转移到时间 $t$ 时得到的中间状态。这个状态在动态系统理论中被称为流(flow)。 </p>
@@ -434,10 +434,10 @@ L_{\theta}(s,t) := C_{\theta}(S_{\theta}^{0}(s,t))
 \tag{6}</script><script type="math/tex; mode=display">
 \bar{\Theta}_0 = \frac{\partial C_\theta}{\partial \theta}(s_\theta^0)
 \tag{7}</script><script type="math/tex; mode=display">
-\frac{\mathrm{d}\bar{S}_t}{\mathrm{d} t} = - \frac{\partial^{2} E_{\theta}}{\partial s^2}(s_\theta^0) \cdot \bar{S}_t
+\frac{\mathrm{d}\bar{S}_t}{\mathrm{d} {t}} = - \frac{\partial^{2} E_{\theta}}{\partial s^2}(s_\theta^0) \cdot \bar{S}_t
 \tag{8}</script><script type="math/tex; mode=display">
-\frac{\mathrm{d}\bar{\Theta}_t}{\mathrm{d} t} = - \frac{\partial^{2} E_{\theta}}{\partial \theta \partial s}(s_\theta^0) \cdot \bar{S}_t
-\tag{9}</script><h3 id="Proof-of-Theorem-1"><a href="#Proof-of-Theorem-1" class="headerlink" title="Proof of Theorem 1"></a>Proof of Theorem 1</h3><p>$(6),(7)$ 都是显然的。</p>
+\frac{\mathrm{d}\bar{\Theta}_t}{\mathrm{d} {t}} = - \frac{\partial^{2} E_{\theta}}{\partial \theta \partial s}(s_\theta^0) \cdot \bar{S}_t
+\tag{9}</script><h3 id="Proof-of-Theorem-1"><a href="#Proof-of-Theorem-1" class="headerlink" title="Proof of Theorem 1"></a>Proof of Theorem 1</h3><p>为了书写方便，下面省略一部分的 $\theta$。$(6),(7)$ 都是显然的。</p>
 <p>首先，我们证明，对于任意的$(s,t)$：</p>
 <script type="math/tex; mode=display">
 \frac{\partial{L}}{\partial{t}}(s,t) + \frac{\partial{L}}{\partial{s}}(s,t) \cdot \frac{\partial{E}}{\partial{s}}(s) = 0
@@ -454,7 +454,33 @@ L(S^0(s,u),t)=L(s,t+u)
 \frac{\partial{L}}{\partial{t}}(S^0(s,u),t) &= \frac{\mathrm{d}L}{\mathrm{d}u}(S^0(s,u),t) \\
 &= \frac{\partial{L}}{\partial{s}}(S^0(s,u),t) \cdot \frac{\mathrm{d}s}{\mathrm{d}u}(S^0(s,u)) \\
 &= -\frac{\partial{L}}{\partial{s}}(S^0(s,u),t) \cdot \frac{\partial{E}}{\partial{s}}(S^0(s,u))
-\end{aligned}</script><p>将 $u=0$ 代入，就能得到 $(10)$ 的结果。</p>
+\end{aligned} 
+\tag{13}</script><p>将 $u=0$ 代入 $(13)$，就能得到 $(10)$ 的结果。</p>
+<p>将 $(10)$ 两边对 $s$ 求导，可以得到：</p>
+<script type="math/tex; mode=display">
+\frac{\partial^2{L}}{\partial{t}\partial{s}}(s,t) + \frac{\partial^2(L)}{\partial{s^2}}(s,t) \cdot \frac{\partial{E}}{\partial{s}}(s) + \frac{\partial{L}}{\partial{s}}(s,t) \cdot \frac{\partial^2{E}}{\partial{s^2}}(s)= 0
+\tag{14}</script><p>把 $s = s_\theta^0$ 代入上式，由于不动点处有 $\frac{\partial{E}}{\partial s} (s_\theta^0) = 0$，因此可以得到：</p>
+<script type="math/tex; mode=display">
+\frac{\mathrm{d}}{\mathrm{d}{t}}\frac{\partial{L}}{\partial{s}}(s_\theta^0,t) 
+= -\frac{\partial^2{E}}{\partial{s^2}}(s_\theta^0) \cdot \frac{\partial{L}}{\partial{s}}(s_\theta^0,t) 
+\tag{15}</script><p>将 $\bar{S}_{t} = \frac{\partial L_{\theta}}{\partial s}(s_{\theta}^0, t)$ 代入，就可以得到方程 $(8)$。可以看到 $(6),(8)$ 刻画了一个关于 $\bar{S}_t$ 的动态系统， 由于 $-\frac{\partial^2{E}}{\partial{s^2}}(s_\theta^0)$ 是定值，我们可以通过数值方法得到任意时刻 $\bar{S}_t$ 的值。</p>
+<p>这里一开始理解的时候出了一点问题。由于 $s_\theta^0$ 是松弛不动点，所以 $L(s_\theta^0,t)$ 在 $t$ 改变时是一个定值，所以我误认为左边恒等于 $0$。 但 $s_\theta^0$ 的邻域并不是不动点，因此两个 $s$ 关于 $t$ 的导数是不同的。</p>
+<p>类似之前的操作，我们将 $(10)$ 两边对 $\theta$ 求导，可以得到：</p>
+<script type="math/tex; mode=display">
+\frac{\partial^2{L}}{\partial{t}\partial{\theta}}(s,t) + 
+\frac{\partial^2{L}}{\partial{s}\partial{\theta}}(s,t) \cdot \frac{\partial{E}}{\partial{s}}(s) + 
+\frac{\partial{L}}{\partial{s}}(s,t) \cdot \frac{\partial^2{E}}{\partial{s}\partial{\theta}}(s) = 0</script><p>同样将 $s = s_\theta^0$ 代入，消去带有 $\frac{\partial{E}}{\partial s} (s)$ 的项，就可以得到：</p>
+<script type="math/tex; mode=display">
+\frac{\mathrm{d}}{\mathrm{d}{t}}\frac{\partial{L}}{\partial{\theta}}(s_\theta^0,t) = - 
+\frac{\partial{L}}{\partial{s}}(s_\theta^0,t) \cdot \frac{\partial^2{E}}{\partial{s}\partial{\theta}}(s_\theta^0) 
+\tag{16}</script><p>即方程 $(9)$。</p>
+<p>回过头看整个证明，重点在于方程 $10$ 把时域的导数和状态域的导数联系在了一起。在项 $<br>\frac{\partial{L}}{\partial{t}}(s,t)$ 对某个参数求导时，可以得到对应参数的导数在时域上的导数。 而<br>$\frac{\partial{L}}{\partial{s}}(s,t) \cdot \frac{\partial{E}}{\partial{s}}(s)$ 在松弛不动点处求导时，只会留下 $\bar{S}_t$ 和某个与 $t$ 无关的二阶导数乘积，进而可以直接计算。</p>
+<h3 id="Algorithm"><a href="#Algorithm" class="headerlink" title="Algorithm"></a>Algorithm</h3><ol>
+<li>从任意初始状态 $s$ 出发，用方程 $(1)$ 迭代得到松弛不动点 $s_\theta^0$。</li>
+<li>根据 $(6)(7)(8)(9)$，得到 $\bar{\Theta}_{+ \infty}$，即所求梯度。</li>
+</ol>
+<h2 id="Q-amp-A"><a href="#Q-amp-A" class="headerlink" title="Q&amp;A"></a>Q&amp;A</h2><p>Q: 为什么 $\bar{S}_t$ 一定可以收敛，也就是 $(8)$ 的左侧为什么一定可以迭代到 $0$？</p>
+<p>A: 由于 $s_\theta^0$ 是 $E_\theta$ 的极小值点，所以此处的 Hessian 矩阵 $\frac{\partial^2{E_\theta}}{\partial{s^2}}(s_\theta^0)$ 是正定的。</p>
 
     </article>
     <!-- license  -->
@@ -598,7 +624,7 @@ top:50vh;
         <div class="toc-catalog">
             <span class="iconfont-archer catalog-icon">&#xe613;</span><span>CATALOG</span>
         </div>
-        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#Model"><span class="toc-number">1.</span> <span class="toc-text">Model</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Method"><span class="toc-number">2.</span> <span class="toc-text">Method</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Theorem-1"><span class="toc-number">2.1.</span> <span class="toc-text">Theorem 1</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Proof-of-Theorem-1"><span class="toc-number">2.2.</span> <span class="toc-text">Proof of Theorem 1</span></a></li></ol></li></ol>
+        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#Model"><span class="toc-number">1.</span> <span class="toc-text">Model</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Method"><span class="toc-number">2.</span> <span class="toc-text">Method</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Theorem-1"><span class="toc-number">2.1.</span> <span class="toc-text">Theorem 1</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Proof-of-Theorem-1"><span class="toc-number">2.2.</span> <span class="toc-text">Proof of Theorem 1</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Algorithm"><span class="toc-number">2.3.</span> <span class="toc-text">Algorithm</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Q-amp-A"><span class="toc-number">3.</span> <span class="toc-text">Q&amp;A</span></a></li></ol>
     </div>
     
     <div class="back-top iconfont-archer">&#xe639;</div>
