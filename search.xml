@@ -1,6 +1,40 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title>The Graph Neural Network Model</title>
+    <url>/2020/10/09/gnn-0/</url>
+    <content><![CDATA[<link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css"><p>这可能是比较早提出图神经网络模型的一篇文章，在这里摘录一些重点。</p>
+<p><a href="https://repository.hkbu.edu.hk/cgi/viewcontent.cgi?article=1000&amp;context=vprd_ja" target="_blank" rel="noopener">原文: The Graph Neural Network Model</a></p>
+<h2 id="Abstract-and-Introduction"><a href="#Abstract-and-Introduction" class="headerlink" title="Abstract and Introduction"></a>Abstract and Introduction</h2><p>很多关系型的数据需要用图论中的图结构来描述，例如分子模型、社交网络等。我们比较难用传统的神经网络来直接刻画这种结构关系，因此这篇文章提出了 Graph Neural Network 来扩展传统神经网络在图数据域的表达能力。具体来说，GNN 提供了一个映射函数 $\tau(\mathrm{G},n) \in \mathbb{R}^m$ 来把一个图 $G$ 以及其中的一个节点 $n$ 来嵌入到一个 $m$ 维的欧氏空间中。 在针对图整体(graph focused)的应用中， $\tau$ 并不关心节点 $n$， 只是对图结构整体做一个分类或者回归任务， 例如对无向图描述的分子结构， 我们可能想设计一个网络来判断它是否对某种疾病具有疗效。 而在针对节点(node focused)的应用中， 模型依赖于每个节点的具体属性。 例如说， 在目标检测中， 可以通过 $\tau$ 在区域邻接图上对节点进行标记， 进而通过标记结果选择检测出来的目标部分。</p>
+<p>传统的机器学习方法在处理图数据的时候， 往往通过将图转化成更简单的表示， 如简单的向量， 但这个过程中可能会丢失拓扑结构之类的信息。 已有的一些方法通过预处理来处理无环图和一部分的有环图， 如 RNN、 马尔科夫链等。 这篇文章提出的方法扩展了已有方法， 得到了能比较好处理图结构的方法。</p>
+<h2 id="The-Graph-Neural-Network-Model"><a href="#The-Graph-Neural-Network-Model" class="headerlink" title="The Graph Neural Network Model"></a>The Graph Neural Network Model</h2><h3 id="Notations"><a href="#Notations" class="headerlink" title="Notations"></a>Notations</h3><p>$N$ 表示节点集合。 $E$ 表示边集合。 $ne[n]$ 表示 $n$ 的邻居集合。 $co[n]$ 表示 $n$ 的邻边集合。 节点和边的标签信息记为 $l_n$ 和 $l_{(n_1,n_2)}$， 维度分别为 $l_N$ 和 $l_E$。 令 $l$ 表示堆叠所有标签得到的结果。 我们将图分为 Positional Graphs 和 Non-positional Graphs。 Positional Graph 中， 对于节点 $n$ 的邻居是存有排列信息的。 例如在区域邻接图上， 可以有一个函数 $v_n$ 描述了 $n$ 邻居的逆时针顺序。</p>
+<p>我们研究的问题定义在域 $\mathcal{D} = \mathcal{G} \times \mathcal{N}$ 上。 其中 $\mathcal{G}$ 是一系列图的集合， 而 $\mathcal{N}$ 是节点的集合。 一组训练集的形式如同 $\mathcal{L} = \left\{ (G_i, n_{i,j}, t_{i,j}) | G_i = (N_i, E_i) \in \mathcal{G}; n_{i,j} \in N_i; t_{i,j} \in \mathbb{R}^m\right\}$。 其中下标 $i,j$ 描述了第几个图的第几个有标注节点。 我们可以进一步把这些图视作一个大的不连通图的不同部分， 这样也可以写作 $\mathcal{L} = (G, \mathcal{T})$， 其中 $G$ 是整个大图而 $\mathcal{T}$包含了所有被标注的节点-标签对 $(n_i, t_i)$。</p>
+<h3 id="The-Model"><a href="#The-Model" class="headerlink" title="The Model"></a>The Model</h3><p>感性地来说， 可以认为图中的节点表示概念（或者实体）， 而边表示它们之间的关系。 一个概念应该由它自身的特征以及相关概念所定义。 我们对每个节点 $n$ 定义 $x_n \in \mathbb{R}^s$ 表示它的状态函数， 这由它自身的标签、邻居的标签、邻边标签、邻居的状态决定。即 $x_n = f_w(l_n, l_{co[n]}, l_{ne[n]}, x_{ne[n]})$。 其中 $f_w$ 被称为局部转化函数(local transition function)， 由参数 $w$ 控制。 在具体的任务中， 我们可能需要输出一些定制化的信息， 如节点分类的结果， 这通过另一个函数 $g_w$ 得到， $g_w$ 被称为局部输出函数(local output function)。 总之， 状态 $x$ 和输出 $o$ 如下定义：</p>
+<script type="math/tex; mode=display">
+\begin{align}
+x_n &= f_w(l_n, l_{co[n]}, l_{ne[n]}, x_{ne[n]}) \\
+o_n &= g_w(l_n, x_n)
+\end{align}
+\tag{1}</script><p>将所有的 $x_n$ 和 $o_n$ 合并到一个向量里，可以得到简化的形式。其中 $l_N$ 表示节点的标签。 $F_w$ 和 $G_w$ 被称为全局转化/输出函数。</p>
+<script type="math/tex; mode=display">
+\begin{align}
+x &= F_w(x, l) \\
+o &= G_w(x, l_N)
+\end{align}
+\tag{2}</script><p>可以看到这个方程组中， 我们希望得到的 $x$ 是方程 $x = F_w(x, l)$ 的一个不动点。 由 Banach 不动点定理， 当 $F_w$ 是一个压缩映射的时候， 即存在 $0 &lt; \mu &lt; 1$， 使得对于任意 $x, y$， 我们有 $\parallel F_w(x, l) - F_w(y, l) \parallel$， 那我们可以通过迭代来以指数级收敛的速度找到这个不动点。 稍后我们可以证明， 可以通过适当的实现来满足压缩映射的要求。</p>
+<p>我们尝试用神经网络去实现 $f_w$ 和 $g_w$。</p>
+<h3 id="Learning-Algorithm"><a href="#Learning-Algorithm" class="headerlink" title="Learning Algorithm"></a>Learning Algorithm</h3><p>之前提到过， 训练集的形式是 $\mathcal{L} = \left\{ (G_i, n_{i,j}, t_{i,j}) | G_i = (N_i, E_i) \in \mathcal{G}; n_{i,j} \in N_i; t_{i,j} \in \mathbb{R}^m\right\}$。 对于 graph-focusd 的任务， 我们仅在图中选择一个点作为标注节点。 我们希望最小化代价函数：</p>
+<script type="math/tex; mode=display">
+e_w = \sum_{i=1}^{p} \sum_{j=1}^{p_i}(t_{i,j} - \varphi_w(G_i, n_{i,j}))
+\tag{3}</script><p>训练过程如下：</p>
+<ol>
+<li>迭代 $T$ 轮近似得到 $x$ 的不动点 $x(T) \approx x$。</li>
+<li>计算 $\frac{\partial{e_w}}{\partial{w}}$， 梯度下降优化参数。</li>
+</ol>
+<h3 id="Theorem-1-Differentiability"><a href="#Theorem-1-Differentiability" class="headerlink" title="Theorem 1: Differentiability"></a>Theorem 1: Differentiability</h3><p>在 $F_w$ 和 $G_w$ 可微， 且迭代求解不动点的动力系统稳态确定的情况下， 证明 $\varphi(G,n)$ 也可微。 这里证明有点没懂， 先留个坑。</p>
+<h3 id="Theorem-2-Backpropagation"><a href="#Theorem-2-Backpropagation" class="headerlink" title="Theorem 2: Backpropagation"></a>Theorem 2: Backpropagation</h3>]]></content>
+  </entry>
+  <entry>
     <title>Almeida–Pineda Recurrent Backpropagation</title>
     <url>/2020/09/21/Recurrent-Propagation/</url>
     <content><![CDATA[<link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css"><p>由 Almeida 和 Pineda 分别提出的算法。</p>
