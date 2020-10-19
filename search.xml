@@ -31,8 +31,14 @@ e_w = \sum_{i=1}^{p} \sum_{j=1}^{p_i}(t_{i,j} - \varphi_w(G_i, n_{i,j}))
 <li>迭代 $T$ 轮近似得到 $x$ 的不动点 $x(T) \approx x$。</li>
 <li>计算 $\frac{\partial{e_w}}{\partial{w}}$， 梯度下降优化参数。</li>
 </ol>
-<h3 id="Theorem-1-Differentiability"><a href="#Theorem-1-Differentiability" class="headerlink" title="Theorem 1: Differentiability"></a>Theorem 1: Differentiability</h3><p>在 $F_w$ 和 $G_w$ 可微， 且迭代求解不动点的动力系统稳态确定的情况下， 证明 $\varphi(G,n)$ 也可微。 这里证明有点没懂， 先留个坑。</p>
-<h3 id="Theorem-2-Backpropagation"><a href="#Theorem-2-Backpropagation" class="headerlink" title="Theorem 2: Backpropagation"></a>Theorem 2: Backpropagation</h3>]]></content>
+<h3 id="Theorem-1-Differentiability"><a href="#Theorem-1-Differentiability" class="headerlink" title="Theorem 1: Differentiability"></a>Theorem 1: Differentiability</h3><p>在 $F_w$ 和 $G_w$ 可微， 且迭代求解不动点的动力系统稳态确定的情况下， 证明 $\varphi(G,n)$ 也可微。 </p>
+<p>令 $\Theta(x,w) = x - F_w(x,l)$， 由假设， $\Theta$ 关于 $x$ 和 $w$ 均可微。 $\frac{\partial{\Theta}}{\partial{x}}(x, w) = I_{|s|} - \frac{\partial{F_w}}{\partial{x}}(x, w)$。 由于 $F_w$ 是一个压缩映射， 存在一个 $0 \le \mu \lt 1$ 使得 $\parallel \frac{\partial{F_w}}{\partial{x}}(x, w) \parallel \le \mu$（考虑矩阵诱导范数的定义：最多能将一个向量的范数放缩多少倍， 再考虑压缩映射的定义， 是任意向量经过映射后的范数是原先的至多 $\mu$ 倍， 而 Jacobi 矩阵定义了在邻域内的缩放比例， 则这个结论显然）， 原文说， 这说明 $\parallel \frac{\partial{\Theta}}{\partial{x}}(x, w) \parallel \gt (1 - \mu)$。 我觉得这里的符号可能有所混淆， 应该是一个类似于诱导范数的定义， 但是取的是放缩比例的最小值， 即 $\min_{u \not = 0}\frac{\parallel  \frac{\partial{\Theta}}{\partial{x}}(x, w)u \parallel}{\parallel u \parallel} \gt (1 - \mu)$。 这样就可以得出 $\frac{\partial{\Theta}}{\partial{x}}(x, w)$ 的行列式非 $0$ （否则直接取特征值 $0$ 对应的特征向量，就可以得到 $0$ 的放缩比例）。 </p>
+<p>根据隐函数定理， 和压缩映射的性质， 我们在任意的 $w$ 处有可微函数 $\Psi(w)$ 使得 $\Theta(\Psi(w), w) = 0$， 即 $\Psi(w) = F_w(\Psi(w), l)$。 因此这个不动点是关于 $w$ 可微的。 而 $\varphi(G, n)$ 不过是在外面再套了一层输出函数， 依然是可微的。</p>
+<h3 id="Theorem-2-Backpropagation"><a href="#Theorem-2-Backpropagation" class="headerlink" title="Theorem 2: Backpropagation"></a>Theorem 2: Backpropagation</h3><script type="math/tex; mode=display">
+\frac{\partial{e_w}}{\partial{w}} = \frac{\partial{e_w}}{\partial{o}} \cdot \frac{\partial {G_w}}{\partial{w}}(x, l_N) + z \cdot \frac{\partial{F_w}}{\partial{w}}(x,l)
+\tag{4}</script><p>其中， $z=\lim_{t \rightarrow -\infty}z(t)$：</p>
+<script type="math/tex; mode=display">
+z(t) = z(t+1) \cdot \frac{\partial{F_w}}{\partial{x}}(x,l) + \frac{\partial{e_w}}{\partial{o}} \cdot \frac{\partial{G_w}}{\partial{x}}(x,l_N)</script>]]></content>
   </entry>
   <entry>
     <title>Almeida–Pineda Recurrent Backpropagation</title>
